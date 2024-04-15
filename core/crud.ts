@@ -1,6 +1,5 @@
 import fs from "fs"; // ES6
-import { cwd } from "process";
-import { v4 as uuid } from 'uuid';
+import { v4 as uuid } from "uuid";
 //const fs = require("fs"); -- Commom JS
 const DB_FILE_PATH = "./core/db";
 
@@ -13,7 +12,6 @@ interface Todo {
   date: string;
   content: string;
   done: boolean;
-
 }
 
 function create(content: string): Todo {
@@ -24,23 +22,28 @@ function create(content: string): Todo {
     done: false,
   };
 
-  const todos: Array<Todo> = [
-    ...read(),
-    todo,
-  ];
+  const todos: Array<Todo> = [...read(), todo];
 
   // salvar o content no sistema
-  fs.writeFileSync(DB_FILE_PATH, JSON.stringify({
-    todos,
-    dogs: [],
-  }, null, 2));
+  fs.writeFileSync(
+    DB_FILE_PATH,
+    JSON.stringify(
+      {
+        todos,
+        dogs: [],
+      },
+      null,
+      2
+    )
+  );
   return todo;
 }
 
 export function read(): Array<Todo> {
   const dbString = fs.readFileSync(DB_FILE_PATH, "utf-8");
   const db = JSON.parse(dbString || "{}");
-  if(!db.todos) { // Fail Fast Validations
+  if (!db.todos) {
+    // Fail Fast Validations
     return [];
   }
 
@@ -52,26 +55,33 @@ function update(id: UUID, partialTodo: Partial<Todo>) {
   const todos = read();
   todos.forEach((currentTodo) => {
     const isToUpdate = currentTodo.id === id;
-    if(isToUpdate) {
+    if (isToUpdate) {
       updatedTodo = Object.assign(currentTodo, partialTodo);
     }
   });
 
-  fs.writeFileSync(DB_FILE_PATH, JSON.stringify({
-    todos,
-  }, null, 2));
+  fs.writeFileSync(
+    DB_FILE_PATH,
+    JSON.stringify(
+      {
+        todos,
+      },
+      null,
+      2
+    )
+  );
 
-  if(!updatedTodo) {
+  if (!updatedTodo) {
     throw new Error("Please provide another ID!");
   }
 
-  return updatedTodo
+  return updatedTodo;
 }
 
 function updateContentById(id: UUID, content: string): Todo {
   return update(id, {
     content,
-  })
+  });
 }
 
 function deleteById(id: UUID) {
@@ -84,14 +94,21 @@ function deleteById(id: UUID) {
     return true;
   });
 
-  fs.writeFileSync(DB_FILE_PATH, JSON.stringify({
-    todos: todosWithoutOne,
-  }, null, 2));
+  fs.writeFileSync(
+    DB_FILE_PATH,
+    JSON.stringify(
+      {
+        todos: todosWithoutOne,
+      },
+      null,
+      2
+    )
+  );
 }
 
 function CLEAR_DB() {
   fs.writeFileSync(DB_FILE_PATH, "");
-};
+}
 
 // [SIMULATION]
 // CLEAR_DB();
