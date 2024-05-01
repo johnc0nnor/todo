@@ -1,7 +1,6 @@
 import React from "react";
 import { GlobalStyles } from "@ui/theme/GlobalStyles";
 import { todoController } from "@ui/controller/todo";
-import { todo } from "node:test";
 
 // const bg = "https://mariosouto.com/cursos/crudcomqualidade/bg";
 const bg = "/bg.jpeg"; // inside public folder
@@ -27,12 +26,7 @@ function HomePage() {
   const hasMorePages = totalPages > page;
   const hasNoTodos = homeTodos.length === 0 && !isLoading;
 
-  // Load infos onload
-  // - React.useEffect(() => {}, [])
-  // -- Roda só no LOAD da página
-  // -- Roda no LOAD do componente
   React.useEffect(() => {
-    // setInitialLoadComplete(true);
     if (!initialLoadComplete.current) {
       todoController
         .get({ page })
@@ -63,13 +57,19 @@ function HomePage() {
             event.preventDefault();
             todoController.create({
               content: newTodoContent,
+              // .then
               onSuccess(todo: HomeTodo) {
                 setTodos((oldTodos) => {
                   return [todo, ...oldTodos];
                 });
+                setNewTodoContent("");
               },
-              onError() {
-                alert("You need the content to create a TODO");
+              // .catch
+              onError(customMessage) {
+                alert(
+                  customMessage ||
+                    "Você precisa ter um conteúdo para criar uma TODO!"
+                );
               },
             });
           }}
